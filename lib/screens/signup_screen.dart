@@ -1,37 +1,20 @@
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  bool _passwordVisible = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _passwordVisible = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,14 +47,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const Text(
-                    'Login',
+                    'Sign Up',
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text('Login to continue using the app'),
+                  const Text('Sign up to continue using the app'),
                   const SizedBox(height: 20),
                   // Email TextFormField
                   const Text(
@@ -200,32 +183,38 @@ class _LoginScreenState extends State<LoginScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               duration: Duration(seconds: 1),
-                              content: Text('Logging you in...'),
+                              content: Text('Signing you in...'),
                             ),
                           );
                           // Login user
                           final String email = _emailController.text.trim();
                           final String password = _passwordController.text;
 
-                          // Navigate to HomeScreen on successful login
-                          await _auth.signInWithEmailAndPassword(
+                          await _auth.createUserWithEmailAndPassword(
                             email: email,
                             password: password,
                           );
-                          if (!mounted) {
-                            return;
-                            
-                          }
+
+                          // redirect after successful signup
                           if (_auth.currentUser != null) {
                             Navigator.of(context).pushReplacementNamed('/home');
                           }
-                        
+                          // await supabase.auth.signInWithPassword(
+                          //   email: email,
+                          //   password: password,
+                          // );
+                          // if (mounted) {
+                          //   Navigator.of(context).pushReplacement(
+                          //     MaterialPageRoute(
+                          //       builder: (context) => const HomeScreen(),
+                          //     ),
+                          //   );
+                          // }
+
+                          // Navigate to HomeScreen on successful login
                         } on Exception catch (e) {
                           print(e);
                           // TODO
-                          if (!mounted) {
-                            return;
-                          }
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               duration: const Duration(seconds: 10),
@@ -238,28 +227,29 @@ class _LoginScreenState extends State<LoginScreen> {
                         _passwordController.clear();
                       }
                     },
-                    child: const Text('Login'),
+                    child: const Text('Sign up'),
                   ),
                   const SizedBox(height: 20),
-                  // Create an account text aligned to the center
+                  // Already have an account? Login
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        'Don\'t have an account?',
+                        'Already have an account?',
                         style: TextStyle(
-                          color: Colors.black,
+                          fontSize: 15,
                         ),
                       ),
                       InkWell(
                         child: const Text(
-                          ' Sign Up',
+                          ' Login',
                           style: TextStyle(
-                            color: Colors.blue,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, '/');
+                          Navigator.of(context).pushReplacementNamed('/login');
                         },
                       ),
                     ],
