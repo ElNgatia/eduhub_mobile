@@ -44,6 +44,7 @@ app.*.map.json
 /android/app/release
 
 # Environment configuration
+/macos/Runner/GoogleService-Info.plist
 /.env
 /.env.local
 .env
